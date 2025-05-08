@@ -1,0 +1,50 @@
+const fs = require('fs');
+const path = require('path');
+const { spawnSync } = require('child_process');
+
+const escenariosDir = './cypress/escenarios';
+const featureTarget = './cypress/e2e/Example.feature';
+const stepsTarget = './cypress/support/step_definitions/steps.js';
+
+// Recorre cada subcarpeta
+const funcionalidades = fs.readdirSync(escenariosDir).filter(f => fs.statSync(path.join(escenariosDir, f)).isDirectory());
+
+let allScenarios = [];
+
+funcionalidades.forEach(func => {
+  const funcPath = path.join(escenariosDir, func);
+  const stepPath = path.join(funcPath, 'steps.js');
+  const features = fs.readdirSync(funcPath).filter(f => f.endsWith('.feature'));
+
+  features.forEach(feature => {
+    allScenarios.push({
+      featurePath: path.join(funcPath, feature),
+      stepPath,
+      name: `${func}/${feature}`
+    });
+  });
+});
+
+for (const scenario of allScenarios) {
+  console.log('='.repeat(80));
+  console.log(`Running scenario: ${scenario.name}`);
+  console.log('='.repeat(80));
+
+  try {
+    fs.copyFileSync(scenario.featurePath, featureTarget);
+    fs.copyFileSync(scenario.stepPath, stepsTarget);
+  } catch (err) {
+    console.error(`Error copying files for scenario ${scenario.name}:`, err);
+    continue;
+  }
+
+  const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+  const res = spawnSync(npmCmd, ['run', 'test'], { stdio: 'inherit' });
+
+  if (res.status !== 0) {
+    console.error(`Scenario ${scenario.name} failed.`);
+    // Puedes elegir `continue` o `process.exit(1)` según el comportamiento que quieras
+  } else {
+    console.log(`Scenario ${scenario.name} passed.`);
+  }
+}

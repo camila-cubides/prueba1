@@ -1,0 +1,56 @@
+name: Run Cypress with Custom Runner
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'Base URL of the app'
+        required: true
+        default: 'http://localhost:3001'
+      email:
+        description: 'Email for login'
+        required: true
+      password:
+        description: 'Password for login'
+        required: true
+      ghost_version:
+        description: 'Ghost version'
+        required: true
+        default: '5.114.1'
+
+jobs:
+  run-cypress:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Cypress tests with custom runner
+        run: |
+          URL="${{ github.event.inputs.url }}" \
+          GHOST_URL="${{ github.event.inputs.url }}/ghost/#" \
+          GHOST_EMAIL="${{ github.event.inputs.email }}" \
+          GHOST_PASSWORD="${{ github.event.inputs.password }}" \
+          GHOST_VERSION="${{ github.event.inputs.ghost_version }}" \
+          node cypressRunner.js
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-screenshots
+          path: cypress/results/screenshots/
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: cypress/results/
