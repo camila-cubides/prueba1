@@ -136,8 +136,12 @@ jobs:
           node index.js
         working-directory: vrt/misw-4103-resemblejs
 
-      - name: Upload VRT results
+      - name: Upload VRT results and screenshots
         uses: actions/upload-artifact@v4
         with:
-          name: vrt-results
-          path: vrt/misw-4103-resemblejs/results
+          name: vrt-full-results
+          path: |
+            e2e/misw-4103-cypress/cypress/screenshots/v4.5
+            e2e/misw-4103-cypress/cypress/screenshots/v5.114.1
+            vrt/misw-4103-resemblejs/results
+
