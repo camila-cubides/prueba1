@@ -1,4 +1,4 @@
-name: VRT Ghost Comparison
+name: VRT Resemblejs Ghost Comparison
 
 on:
   workflow_dispatch:
@@ -81,7 +81,7 @@ jobs:
       - name: Install Ghost v4.5
         working-directory: ghost-site
         run: |
-          ghost install 4.5 --no-prompt --no-start --local
+          ghost install 4.5 --no-prompt --no-start --local --force
           ghost start
 
       - name: Wait for Ghost v4.5 to be ready
