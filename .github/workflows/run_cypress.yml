@@ -71,13 +71,13 @@ jobs:
         working-directory: e2e/misw-4103-cypress
 
       - name: Upload Cypress screenshots
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4
         with:
           name: cypress-screenshots
           path: e2e/misw-4103-cypress/cypress/screenshots/
 
       - name: Upload test report
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4
         with:
           name: test-report
           path: e2e/misw-4103-cypress/cypress/results/
