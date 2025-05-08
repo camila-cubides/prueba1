@@ -44,9 +44,10 @@ jobs:
           node -v
           npm -v
           npm install -g ghost-cli@1.17.3
-          mkdir -p /tmp/ghost-local
-          cd /tmp/ghost-local
+          mkdir ghost-site
+          cd ghost-site
           ghost install 4.5 --no-prompt --no-start --local --force
+          chmod o+rx /home/runner
           ghost start
 
       - name: Wait for Ghost v4.5 to be ready
