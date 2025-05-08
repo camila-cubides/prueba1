@@ -6,7 +6,7 @@ on:
       url:
         description: 'Base URL of the app'
         required: true
-        default: 'http://localhost:3001'
+        default: 'http://localhost:2368'
       email:
         description: 'Email for login'
         required: true
@@ -26,12 +26,34 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: '20.11.1'
 
-      - name: Install dependencies
+      - name: Install Ghost CLI
+        run: npm install -g ghost-cli
+
+      - name: Set up Ghost instance
+        run: |
+          mkdir ghost-site
+          cd ghost-site
+
+          # Instalar Ghost sin auto-setup
+          ghost install ${{ github.event.inputs.ghost_version }} --no-prompt --no-setup --no-start --local
+
+          # Iniciar Ghost
+          ghost start &
+
+      - name: Wait for Ghost to be ready
+        run: |
+          echo "Waiting for Ghost to be ready..."
+          until curl -s http://localhost:2368/ghost/ > /dev/null; do
+            sleep 5
+          done
+          echo "Ghost is ready!"
+
+      - name: Install Node dependencies
         run: npm ci
 
       - name: Run Cypress tests with custom runner
@@ -43,7 +65,7 @@ jobs:
           GHOST_VERSION="${{ github.event.inputs.ghost_version }}" \
           node cypressRunner.js
 
-      - name: Upload screenshots
+      - name: Upload Cypress screenshots
         uses: actions/upload-artifact@v3
         with:
           name: cypress-screenshots
@@ -54,3 +76,12 @@ jobs:
         with:
           name: test-report
           path: cypress/results/
+
+      - name: Teardown Ghost
+        if: always()
+        run: |
+          cd ghost-site
+          ghost stop
+          ghost uninstall --yes
+          cd ..
+          rm -rf ghost-site

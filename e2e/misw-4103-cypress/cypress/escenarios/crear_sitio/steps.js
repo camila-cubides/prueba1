@@ -8,7 +8,7 @@ Given('I go to page {string}', (path) => {
   cy.visit(path, {
     failOnStatusCode: false,       // para ignorar el 426 como “status code error”
     headers: {
-      Host: 'localhost:3001'       // engañamos al servidor para que acepte el request
+      Host: 'localhost:2368'       // engañamos al servidor para que acepte el request
     }
   });
 });
@@ -17,6 +17,22 @@ Given('I wait for {int} seconds', (secs) => {
 });
 
 When('I enter text {string} into the input with id {string}', (text, id) => {
+  const element = cy.get(`#${id}`).clear();
+  if (text !== '') {
+    element.type(text);
+  }
+});
+
+When('I enter valid email into the input with id {string}', (id) => {
+  text = Cypress.env('EMAIL');
+  const element = cy.get(`#${id}`).clear();
+  if (text !== '') {
+    element.type(text);
+  }
+});
+
+When('I enter valid password into the input with id {string}', (id) => {
+  text = Cypress.env('PASSWORD');
   const element = cy.get(`#${id}`).clear();
   if (text !== '') {
     element.type(text);

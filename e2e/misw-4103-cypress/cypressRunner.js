@@ -9,6 +9,12 @@ const stepsTarget = './cypress/support/step_definitions/steps.js';
 // Recorre cada subcarpeta
 const funcionalidades = fs.readdirSync(escenariosDir).filter(f => fs.statSync(path.join(escenariosDir, f)).isDirectory());
 
+funcionalidades.sort((a, b) => {
+  if (a === 'crear_sitio') return -1;
+  if (b === 'crear_sitio') return 1;
+  return 0;
+});
+
 let allScenarios = [];
 
 funcionalidades.forEach(func => {

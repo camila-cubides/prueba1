@@ -13,7 +13,7 @@ module.exports = defineConfig({
   reporter: 'mochawesome',
   reporterOptions: {
     reportDir: 'cypress/results',
-    reportFilename: `monkey-report-${timestamp}`,
+    reportFilename: `cypress-report-${timestamp}`,
     overwrite: false,
     json: true,
     charts: true, 
@@ -39,11 +39,10 @@ module.exports = defineConfig({
         const screenshotScenario = screenshotName[1];
         const screenshotStep = screenshotName[2];
 
-        const date = (new Date()).toISOString().split('T')[0];
-        const newPath = `./cypress/screenshots/${date}/${screenshotVersion}/${screenshotScenario}_${screenshotStep}.png`;
+        const newPath = `./cypress/screenshots/${screenshotVersion}/${screenshotScenario}_${screenshotStep}.png`;
 
-        if (!fs.existsSync(`./cypress/screenshots/${date}/${screenshotVersion}`)) {
-          fs.mkdirSync(`./cypress/screenshots/${date}/${screenshotVersion}`, { recursive: true });
+        if (!fs.existsSync(`./cypress/screenshots/${screenshotVersion}`)) {
+          fs.mkdirSync(`./cypress/screenshots/${screenshotVersion}`, { recursive: true });
         }
 
         return new Promise((resolve, reject) => {
@@ -57,10 +56,10 @@ module.exports = defineConfig({
       });
       return config;
     },
-    baseUrl: process.env.URL || 'http://localhost:3001',
+    baseUrl: process.env.URL || 'http://localhost:2368',
   },
   env: {
-    URL: process.env.GHOST_URL || 'http://localhost:3001/ghost/#',
+    URL: process.env.GHOST_URL || 'http://localhost:2368/ghost/#',
     EMAIL: process.env.GHOST_EMAIL || 'admin@gmail.com',
     PASSWORD: process.env.GHOST_PASSWORD || '12345678910*',
     GHOST_VERSION: process.env.GHOST_VERSION || '5.114.1'
