@@ -44,8 +44,8 @@ jobs:
           node -v
           npm -v
           npm install -g ghost-cli@1.17.3
-          mkdir ghost-site
-          cd ghost-site
+          mkdir -p /home/runner/ghost-local
+          cd /home/runner/ghost-local
           ghost install 4.5 --no-prompt --no-start --local --force
           ghost start
 
