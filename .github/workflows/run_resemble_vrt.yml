@@ -130,8 +130,8 @@ jobs:
     
       - name: Run Visual Regresion Test
         run: |
-          BASE_SCREENSHOTS_PATH="e2e/misw-4103-cypress/cypress/screenshots/v4.5" \
-          RC_SCREENSHOTS_PATH="e2e/misw-4103-cypress/cypress/screenshots/v5.114.1" \
+          BASE_SCREENSHOTS_PATH="../../e2e/misw-4103-cypress/cypress/screenshots/v4.5" \
+          RC_SCREENSHOTS_PATH="../../e2e/misw-4103-cypress/cypress/screenshots/v5.114.1" \  
           OUTPUT="vrt/misw-4103-resemblejs/results" \
           node index.js
         working-directory: vrt/misw-4103-resemblejs
