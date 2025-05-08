@@ -57,8 +57,7 @@ jobs:
           exit 1
 
       - name: Install Node dependencies
-        run: npm ci
-        working-directory: e2e/misw-4103-cypress
+        run: npm ci --prefix ./e2e/misw-4103-cypress
 
       - name: Run Cypress tests with custom runner
         run: |
