@@ -40,7 +40,7 @@ jobs:
       - name: Set up Ghost instance
         working-directory: ghost-site
         run: |
-          ghost install ${{ github.event.inputs.ghost_version }} --no-prompt --no-setup --no-start --local
+          ghost install ${{ github.event.inputs.ghost_version }} --no-prompt --no-start --local
           ghost start
 
       - name: Wait for Ghost to be ready
