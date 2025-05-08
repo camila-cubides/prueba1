@@ -5,9 +5,9 @@ const path = require('path');
 
 const { baseScreenshotsPath, rcScreenshotsPath, output, options } = config;
 
-const screenshotsDir1 = baseScreenshotsPath;
-const screenshotsDir2 = rcScreenshotsPath;
-const outputDir = output || "VRTReport";
+const screenshotsDir1 = process.env.BASE_SCREENSHOTS_PATH || baseScreenshotsPath;
+const screenshotsDir2 = process.env.RC_SCREENSHOTS_PATH  || rcScreenshotsPath;
+const outputDir = process.env.OUTPUT || output;
 
 function ensureDirSync(dirPath) {
   if (!fs.existsSync(dirPath)) {

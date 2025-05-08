@@ -3,10 +3,6 @@ name: Run Cypress with Custom Runner
 on:
   workflow_dispatch:
     inputs:
-      url:
-        description: 'Base URL of the app'
-        required: true
-        default: 'http://localhost:2368'
       email:
         description: 'Email for login'
         required: true
@@ -61,8 +57,8 @@ jobs:
 
       - name: Run Cypress tests with custom runner
         run: |
-          URL="${{ github.event.inputs.url }}" \
-          GHOST_URL="${{ github.event.inputs.url }}/ghost/#" \
+          URL="http://localhost:2368" \
+          GHOST_URL="http://localhost:2368/ghost/#" \
           GHOST_EMAIL="${{ github.event.inputs.email }}" \
           GHOST_PASSWORD="${{ github.event.inputs.password }}" \
           GHOST_VERSION="${{ github.event.inputs.ghost_version }}" \

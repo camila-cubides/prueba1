@@ -4,16 +4,21 @@ const { Given, When, Then } = require('@badeball/cypress-cucumber-preprocessor')
 // Reemplazando las calls a WebDriver por cy.get() / cy.visit(), Patron GWT
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 
-Given('I go to page {string}', (path) => {
-  cy.visit(path, {
-    failOnStatusCode: false,       // para ignorar el 426 como “status code error”
-    headers: {
-      Host: 'localhost:3001'       // engañamos al servidor para que acepte el request
-    }
+Given('I navigate to host page and path {string}', (path) => {
+  const fullUrl = Cypress.env('URL') + path;
+  const url = new URL(fullUrl);
+  cy.visit(fullUrl, {
+    failOnStatusCode: false,
+    headers: { Host: url.host }
   });
 });
+
 Given('I wait for {int} seconds', (secs) => {
   cy.wait(secs * 1000);
+});
+
+When('I click on create account', () => {
+  cy.get('#ember12').click();
 });
 
 When('I enter text {string} into the input with id {string}', (text, id) => {
@@ -39,25 +44,15 @@ When('I enter valid password into the input with id {string}', (id) => {
   }
 });
 
-When('I click on the element with data-test-button {string}', (btnName) => {
-  cy.get(`[data-test-button="${btnName}"]`).click();
+When('I click on the submit button', () => {
+  cy.get('#ember29').click();
 });
 
-Then('I wait for url containing {string} for {int} seconds', (pattern, secs) => {
-  cy.url().should('include', pattern, { timeout: secs * 1000 });
+When ('I click skip in the invite staff users', () => {
+  cy.get('button.gh-flow-skip').click();
 });
 
 Then('I should see the Ghost dashboard', () => {
-  cy.get('.gh-nav-menu-details-sitetitle')
-    .should('be.visible');
+  cy.get('.gh-nav-list.gh-nav-main a[title="Dashboard"]').should('exist');
 });
 
-Then('I should see text {string} in the element with selector {string}', (expectedText, selector) => {
-  cy.get(selector)
-    .filter(':visible')
-    .first()
-    .invoke('text')
-    .then((actual) => {
-      expect(actual.trim()).to.equal(expectedText);
-    });
-});

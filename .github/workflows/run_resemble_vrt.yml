@@ -1,0 +1,135 @@
+name: VRT Ghost Comparison
+
+on:
+  workflow_dispatch:
+    inputs:
+      email:
+        description: 'Email for login'
+        required: true
+      password:
+        description: 'Password for login'
+        required: true
+
+jobs:
+  run-vrt-comparison:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.11.1'
+
+      - name: Install Ghost CLI
+        run: npm install -g ghost-cli
+
+      - name: Install Node dependencies for Cypress
+        run: npm ci --prefix ./e2e/misw-4103-cypress
+
+      ############################
+      # PRUEBAS CON GHOST 5.114.1
+      ############################
+
+      - name: Create Ghost working dir (v5)
+        run: mkdir ghost-site
+
+      - name: Install Ghost v5.114.1
+        working-directory: ghost-site
+        run: |
+          ghost install 5.114.1 --no-prompt --no-start --local
+          ghost start
+
+      - name: Wait for Ghost v5 to be ready
+        run: |
+          echo "Waiting for Ghost v5.114.1 to be ready..."
+          for i in {1..30}; do
+            if curl -s http://localhost:2368/ghost/ > /dev/null; then
+              echo "Ghost v5.114.1 is ready!"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Ghost did not start in time"
+          exit 1
+
+      - name: Run Cypress tests for Ghost v5.114.1
+        run: |
+          URL="http://localhost:2368" \
+          GHOST_URL="http://localhost:2368/ghost/#" \
+          GHOST_EMAIL="${{ github.event.inputs.email }}" \
+          GHOST_PASSWORD="${{ github.event.inputs.password }}" \
+          GHOST_VERSION="5.114.1" \
+          node cypressRunner.js
+        working-directory: e2e/misw-4103-cypress
+
+      - name: Teardown Ghost v5
+        run: |
+          ghost stop --dir ghost-site || echo "Ghost was not running"
+          ghost uninstall --yes --dir ghost-site || echo "Ghost was not installed"
+          rm -rf ghost-site
+
+      ############################
+      # PRUEBAS CON GHOST 4.5
+      ############################
+
+      - name: Create Ghost working dir (v4)
+        run: mkdir ghost-site
+
+      - name: Install Ghost v4.5
+        working-directory: ghost-site
+        run: |
+          ghost install 4.5 --no-prompt --no-start --local
+          ghost start
+
+      - name: Wait for Ghost v4.5 to be ready
+        run: |
+          echo "Waiting for Ghost v4.5 to be ready..."
+          for i in {1..30}; do
+            if curl -s http://localhost:2368/ghost/ > /dev/null; then
+              echo "Ghost v4.5 is ready!"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Ghost did not start in time"
+          exit 1
+
+      - name: Run Cypress tests for Ghost v4.5
+        run: |
+          URL="http://localhost:2368" \
+          GHOST_URL="http://localhost:2368/ghost/#" \
+          GHOST_EMAIL="${{ github.event.inputs.email }}" \
+          GHOST_PASSWORD="${{ github.event.inputs.password }}" \
+          GHOST_VERSION="4.5" \
+          node cypressRunner.js escenarios_base
+        working-directory: e2e/misw-4103-cypress
+
+      - name: Teardown Ghost v4
+        run: |
+          ghost stop --dir ghost-site || echo "Ghost was not running"
+          ghost uninstall --yes --dir ghost-site || echo "Ghost was not installed"
+          rm -rf ghost-site
+
+      ############################
+      # COMPARACIÓN VRT
+      ############################
+
+      - name: Install Node dependencies for Resemblejs
+        run: npm ci --prefix ./vrt/misw-4103-resemblejs
+    
+      - name: Run Visual Regresion Test
+        run: |
+          BASE_SCREENSHOTS_PATH="e2e/misw-4103-cypress/cypress/screenshots/v4.5" \
+          RC_SCREENSHOTS_PATH="e2e/misw-4103-cypress/cypress/screenshots/v5.114.1" \
+          OUTPUT="vrt/misw-4103-resemblejs/results" \
+          node index.js
+        working-directory: vrt/misw-4103-resemblejs
+
+      - name: Upload VRT results
+        uses: actions/upload-artifact@v4
+        with:
+          name: vrt-results
+          path: vrt/misw-4103-resemblejs/results

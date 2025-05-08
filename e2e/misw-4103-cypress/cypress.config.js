@@ -56,13 +56,13 @@ module.exports = defineConfig({
       });
       return config;
     },
-    baseUrl: process.env.URL || 'http://localhost:2368',
+    baseUrl: process.env.URL || 'http://localhost:3001',
   },
   env: {
-    URL: process.env.GHOST_URL || 'http://localhost:2368/ghost/#',
+    URL: process.env.GHOST_URL || 'http://localhost:3001/ghost/#',
     EMAIL: process.env.GHOST_EMAIL || 'admin@gmail.com',
     PASSWORD: process.env.GHOST_PASSWORD || '12345678910*',
-    GHOST_VERSION: process.env.GHOST_VERSION || '5.114.1'
+    GHOST_VERSION: process.env.GHOST_VERSION || '4.5'
   },
   pageLoadTimeout: 120000,
   screenshotsFolder: 'cypress/results/screenshots',

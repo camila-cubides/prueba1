@@ -2,7 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 
-const escenariosDir = './cypress/escenarios';
+const subfolder = process.argv[2] || 'escenarios';
+const escenariosDir = path.join('./cypress', subfolder);
 const featureTarget = './cypress/e2e/Example.feature';
 const stepsTarget = './cypress/support/step_definitions/steps.js';
 
