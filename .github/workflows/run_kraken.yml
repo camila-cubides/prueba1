@@ -32,6 +32,9 @@ jobs:
             libxss1 \
             libgbm1
 
+      - name: Install Node dependencies for Kraken
+        run: npm ci --prefix ./e2e/misw-4103-kraken
+
       - name: Install Ghost CLI
         run: npm install -g ghost-cli
 
@@ -56,9 +59,6 @@ jobs:
           done
           echo "Ghost did not start in time"
           exit 1
-
-      - name: Install Node dependencies for Kraken
-        run: npm ci --prefix ./e2e/misw-4103-kraken
 
       - name: Run Kraken tests with custom runner
         run: |

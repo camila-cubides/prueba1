@@ -1,0 +1,139 @@
+name: Run Kraken and VRT Comparison
+
+on:
+  workflow_dispatch:
+    inputs:
+      email:
+        description: 'Email for login'
+        required: true
+      password:
+        description: 'Password for login'
+        required: true
+
+jobs:
+  run-kraken-vrt:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.11.1'
+
+      - name: Install dependencies for Chrome, ADB, and other libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            android-tools-adb \
+            google-chrome-stable \
+            libnss3 \
+            libatk-bridge2.0-0 \
+            libxss1 \
+            libgbm1
+
+      - name: Install Ghost CLI
+        run: npm install -g ghost-cli
+
+      - name: Install Node dependencies for Kraken
+        run: npm ci --prefix ./e2e/misw-4103-kraken
+
+      ############################
+      # PRUEBAS CON GHOST 4.5
+      ############################
+
+      - name: Install and use Node 14.16.1 with nvm
+        run: |
+          export NVM_DIR="$HOME/.nvm"
+          mkdir -p "$NVM_DIR"
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+          . "$NVM_DIR/nvm.sh"
+          nvm install 14.16.1
+          nvm use 14.16.1
+          node -v
+          npm -v
+          npm install -g ghost-cli@1.17.3
+          mkdir ghost-site
+          cd ghost-site
+          ghost install 4.5 --no-prompt --no-start --local --force
+          chmod o+rx /home/runner
+          ghost start
+
+      - name: Wait for Ghost v4.5 to be ready
+        run: |
+          echo "Waiting for Ghost v4.5 to be ready..."
+          for i in {1..30}; do
+            if curl -s http://localhost:2368/ghost/ > /dev/null; then
+              echo "Ghost v4.5 is ready!"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Ghost did not start in time"
+          exit 1
+
+      - name: Run Kraken tests (Ghost v4.5)
+        run: |
+          export PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+          mkdir -p screenshots/v4.5
+          xvfb-run -a node krakenRunner.js v4.5
+        working-directory: e2e/misw-4103-kraken
+
+      - name: Teardown Ghost v4.5
+        run: |
+          ghost stop --dir ghost-site || echo "Ghost was not running"
+          ghost uninstall --yes --dir ghost-site || echo "Ghost was not installed"
+          rm -rf ghost-site
+
+      ############################
+      # PRUEBAS CON GHOST 5.114.1
+      ############################
+
+      - name: Create Ghost working dir (v5)
+        run: mkdir ghost-site
+
+      - name: Install Ghost v5.114.1
+        working-directory: ghost-site
+        run: |
+          ghost install 5.114.1 --no-prompt --no-start --local
+          ghost start
+
+      - name: Wait for Ghost v5.114.1 to be ready
+        run: |
+          echo "Waiting for Ghost v5.114.1 to be ready..."
+          for i in {1..30}; do
+            if curl -s http://localhost:2368/ghost/ > /dev/null; then
+              echo "Ghost v5.114.1 is ready!"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Ghost did not start in time"
+          exit 1
+
+      - name: Run Kraken tests (Ghost v5.114.1)
+        run: |
+          export PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+          mkdir -p screenshots/v5.114.1
+          xvfb-run -a node krakenRunner.js v5.114.1
+        working-directory: e2e/misw-4103-kraken
+
+      - name: Teardown Ghost v5.114.1
+        run: |
+          ghost stop --dir ghost-site || echo "Ghost was not running"
+          ghost uninstall --yes --dir ghost-site || echo "Ghost was not installed"
+          rm -rf ghost-site
+
+      ############################
+      # SUBIR AMBOS RESULTADOS
+      ############################
+
+      - name: Upload VRT results and screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: kraken-results
+          path: |
+            e2e/misw-4103-kraken/screenshots/v4.5
+            e2e/misw-4103-kraken/screenshots/v5.114.1
