@@ -2,7 +2,7 @@ Feature: Crear un nuevo sitio en Ghost CMS
 
 @user13 @web @createSiteEmailError
  Scenario: Crear un sitio con email incorrecto muestra mensaje de error
-    Given I navigate to page "http://localhost:2368/ghost/#/setup"
+    Given I navigate to page "http://localhost:3001/ghost/#/setup"
     And I wait for 2 seconds
     When I enter text "Mi sitio de prueba" into the input with id "blog-title"
     And I enter text "Usuario de Prueba" into the input with id "name"

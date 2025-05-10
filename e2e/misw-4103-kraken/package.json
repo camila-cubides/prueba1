@@ -16,7 +16,8 @@
   },
   "scripts": {
     "test": "npx kraken-node run",
-    "test:all": "node krakenRunner.js"
+    "test:all": "node krakenRunner.js",
+    "test:base": "node krakenRunner.js escenarios_base"
   },
   "dependencies": {
     "@faker-js/faker": "^9.6.0",

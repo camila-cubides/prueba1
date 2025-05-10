@@ -1,8 +1,7 @@
 const fs = require('fs');
-const config = require('./properties.json');
 
 const takeKrakenScreenshot = async (driver, scenario, step) => {
-    let ghostVersion = config.GHOST_VERSION;
+    let ghostVersion = process.env.GHOST_VERSION || '5.114.1';
     if (!fs.existsSync(`./screenshots/v${ghostVersion}`)) {
         fs.mkdirSync(`./screenshots/v${ghostVersion}`, { recursive: true });
     }

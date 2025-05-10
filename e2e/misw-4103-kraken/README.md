@@ -167,7 +167,7 @@ npm install kraken-node
 Una vez instalada, deberá ejecutar los comandos de `kraken-node` indicando la ruta relativa de la librería instalada en el directorio node_modules. Para ejecutar la prueba, el comando debe ser:
 
 ```bash
-./node_modules/kraken-node/bin/kraken-node run
+node ./node_modules/kraken-node/bin/kraken-node run
 ```
 
 De este modo, se asegura que la librería tenga acceso local a sus dependencias de Cucumber.
