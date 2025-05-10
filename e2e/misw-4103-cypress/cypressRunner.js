@@ -46,11 +46,10 @@ for (const scenario of allScenarios) {
   }
 
   const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-  const res = spawnSync(npmCmd, ['run', 'test'], { stdio: 'inherit' });
+  const res = spawnSync(npmCmd, ['run', 'test'], { stdio: 'inherit', shell: true });
 
   if (res.status !== 0) {
     console.error(`Scenario ${scenario.name} failed.`);
-    // Puedes elegir `continue` o `process.exit(1)` según el comportamiento que quieras
   } else {
     console.log(`Scenario ${scenario.name} passed.`);
   }

@@ -18,8 +18,8 @@
   "scripts": {
     "test": "npx cypress run",
     "test:ui": "npx cypress open",
-    "run:all": "node cypressRunner.js",
-    "run:base": "node cypressRunner.js escenarios_base",
+    "test:all": "node cypressRunner.js",
+    "test:base": "node cypressRunner.js escenarios_base",
     "lint": "eslint . --ext .js",
     "lint:fix": "eslint . --ext .js --fix"
   },
