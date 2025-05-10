@@ -2,7 +2,7 @@ Feature: Crear un nuevo sitio en Ghost CMS
 
   @user14 @web @createSiteNameError
  Scenario: Crear un sitio sin nombre muestra mensaje de error
-    Given I navigate to page "http://localhost:3001/ghost/#/setup"
+    Given I navigate to page "http://localhost:2368/ghost/#/setup"
     And I wait for 2 seconds
     # dejamos el título vacío
     When I enter text "<EMPTY>" into the input with id "blog-title"

@@ -2,7 +2,7 @@ Feature: Crear un nuevo sitio en Ghost CMS
 
 @user16 @web
 Scenario: Crear un sitio exitosamente
-  Given I navigate to page "http://localhost:3001/ghost/#/setup"
+  Given I navigate to page "http://localhost:2368/ghost/#/setup"
   And I wait for 2 seconds
   When I enter text "<SITE_TITLE>" into the input with id "blog-title"
   And I enter text "<FULL_NAME>" into the input with id "name"
