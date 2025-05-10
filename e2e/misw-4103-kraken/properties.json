@@ -1,7 +1,7 @@
 {
-  "URL": "http://localhost:3001/ghost/#",
-  "EMAIL": "example@email.com",
-  "PASSWORD": "examplePassword",
+  "URL": "http://localhost:2368/ghost/#",
+  "EMAIL": "admin@gmail.com",
+  "PASSWORD": "12345678910*",
   "SITE_TITLE": "Example Test site E2E",
   "FULL_NAME": "Example Name",
   "GHOST_VERSION": "5.114.1"
